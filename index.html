@@ -113,6 +113,18 @@
   .bar-fill{background:var(--blue); height:100%; border-radius:6px;}
   .bar-val{width:70px; text-align:right; font-size:12.5px; color:var(--text-dim); flex-shrink:0; font-weight:500;}
 
+  /* ---------- Donut chart ---------- */
+  .donut-wrap{position:relative; width:180px; height:180px; margin:4px auto 20px;}
+  .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .donut-total{font-size:19px; font-weight:700; color:var(--text); letter-spacing:-0.01em;}
+  .donut-label{font-size:11px; color:var(--text-dim); font-weight:600; margin-top:2px;}
+  .legend-row{display:flex; align-items:center; gap:9px; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .legend-row:last-child{border-bottom:none;}
+  .legend-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .legend-name{flex:1; color:var(--text); font-weight:500;}
+  .legend-pct{color:var(--text-dim); font-size:12.5px; width:38px; text-align:right; flex-shrink:0;}
+  .legend-amt{font-weight:700; color:var(--text); width:84px; text-align:right; flex-shrink:0;}
+
   @media (max-width:400px){
     h1{font-size:26px;}
     .field-grid{grid-template-columns:1fr;}
@@ -143,6 +155,10 @@
 <script>
 const STORAGE_KEY = 'budget-calculator-v1';
 const CATEGORIES = ['Wohnen','Lebensmittel','Transport','Versicherungen','Abos','Freizeit','Gesundheit','Sonstiges'];
+const CATEGORY_COLORS = {
+  'Wohnen':'#007AFF', 'Lebensmittel':'#34C759', 'Transport':'#FF9500', 'Versicherungen':'#AF52DE',
+  'Abos':'#FF375F', 'Freizeit':'#5AC8FA', 'Gesundheit':'#FF3B30', 'Sonstiges':'#8E8E93',
+};
 const MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 
 let state = null;
@@ -329,7 +345,7 @@ function renderAusgaben(){
 }
 
 /* ---------------- render: übersicht ---------------- */
-function categoryBarsHTML(){
+function categoryDonutHTML(){
   const mKey = currentMonthKey();
   const list = expensesForMonth(mKey);
   if(!list.length){
@@ -337,14 +353,41 @@ function categoryBarsHTML(){
   }
   const byCat = {};
   list.forEach(e=>{ byCat[e.category] = (byCat[e.category]||0) + e.amount; });
-  const max = Math.max(...Object.values(byCat));
-  return Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
-    <div class="bar-row">
-      <div class="bar-label">${escapeHtml(cat)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(amt/max*100).toFixed(0)}%"></div></div>
-      <div class="bar-val">${fmtEuro(amt)}</div>
+  const entries = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const total = entries.reduce((s,[,amt])=>s+amt, 0);
+
+  const r = 70, cx = 90, cy = 90, strokeWidth = 24;
+  const circumference = 2*Math.PI*r;
+  let cumulative = 0;
+  const segments = entries.map(([cat,amt])=>{
+    const dash = (amt/total)*circumference;
+    const circle = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${CATEGORY_COLORS[cat]||'#8E8E93'}"
+      stroke-width="${strokeWidth}" stroke-dasharray="${dash.toFixed(2)} ${(circumference-dash).toFixed(2)}"
+      stroke-dashoffset="${(-cumulative).toFixed(2)}"/>`;
+    cumulative += dash;
+    return circle;
+  }).join('');
+
+  const legend = entries.map(([cat,amt])=>`
+    <div class="legend-row">
+      <span class="legend-dot" style="background:${CATEGORY_COLORS[cat]||'#8E8E93'}"></span>
+      <span class="legend-name">${escapeHtml(cat)}</span>
+      <span class="legend-pct">${(amt/total*100).toFixed(0)}%</span>
+      <span class="legend-amt">${fmtEuro(amt)}</span>
+    </div>`).join('');
+
+  return `
+    <div class="donut-wrap">
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <g transform="rotate(-90 ${cx} ${cy})">${segments}</g>
+      </svg>
+      <div class="donut-center">
+        <div class="donut-total">${fmtEuro(total)}</div>
+        <div class="donut-label">Gesamt</div>
+      </div>
     </div>
-  `).join('');
+    ${legend}
+  `;
 }
 
 function monthTrendHTML(){
@@ -367,7 +410,7 @@ function renderUebersicht(){
   return `
     <div class="card">
       <h2>Nach Kategorie · ${monthLabel(currentMonthKey())}</h2>
-      ${categoryBarsHTML()}
+      ${categoryDonutHTML()}
     </div>
     <div class="card">
       <h2>Verlauf (6 Monate)</h2>
