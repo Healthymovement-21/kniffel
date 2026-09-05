@@ -20,6 +20,7 @@
     --amber:#FFB13C;
     --danger:#FF4666;
     --good:#3FFFB0;
+    --magenta:#FF6FD8;
     --text:#D8F3FF;
     --text-dim:#5C859C;
   }
@@ -209,6 +210,37 @@
   }
   .bmi-badge.warn{color:var(--amber);}
 
+  /* ---------- Checklist (Plan tab) ---------- */
+  .check-item{display:flex; align-items:flex-start; gap:10px; padding:9px 2px; border-bottom:1px dashed rgba(63,224,255,0.14); cursor:pointer;}
+  .check-item:last-child{border-bottom:none;}
+  .checkbox{
+    width:19px; height:19px; border:1.5px solid rgba(63,224,255,0.4); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; margin-top:2px;
+  }
+  .checkbox.on{background:rgba(63,224,255,0.18); border-color:var(--cyan); box-shadow:0 0 8px rgba(63,224,255,0.5);}
+  .checkbox.on::after{content:'✓'; color:var(--cyan-soft); font-size:12px; font-weight:700;}
+  .check-text{flex:1; font-size:13.5px; color:var(--text); line-height:1.4;}
+  .check-text.done{color:var(--text-dim); text-decoration:line-through; text-decoration-color:rgba(63,224,255,0.35);}
+  .check-sub{font-size:11.5px; color:var(--text-dim); margin-top:2px; line-height:1.4;}
+  .day-block{margin-bottom:18px;}
+  .day-block:last-child{margin-bottom:0;}
+  .day-title{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:4px;}
+  .day-title .dname{font-family:'Orbitron', sans-serif; font-size:11.5px; letter-spacing:1.5px; color:var(--cyan-soft); text-transform:uppercase;}
+  .day-title .dmeta{font-family:'IBM Plex Mono'; font-size:10px; color:var(--text-dim); white-space:nowrap;}
+
+  /* ---------- Macro summary ---------- */
+  .macro-block{margin-bottom:18px;}
+  .macro-block:last-child{margin-bottom:0;}
+  .macro-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-dim); margin-bottom:6px;
+    text-transform:uppercase; letter-spacing:1px;
+  }
+  .macro-head .kcal{color:var(--cyan-soft); font-weight:700; font-size:13px; text-shadow:0 0 8px rgba(63,224,255,0.4);}
+  .macro-bar-track{height:12px; background:rgba(63,224,255,0.06); overflow:hidden; border:1px solid rgba(63,224,255,0.15);}
+  .macro-legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-family:'IBM Plex Mono'; font-size:10.5px; color:var(--text-dim);}
+  .macro-legend i{display:inline-block; width:8px; height:8px; margin-right:5px; vertical-align:middle;}
+
   @media (max-width:400px){
     h1{font-size:28px; letter-spacing:4px;}
     .field-grid{grid-template-columns:1fr;}
@@ -244,6 +276,66 @@
 const STORAGE_KEY = 'fitness-tracker-v1';
 const ACTIVITY_TYPES = ['Laufen','Radfahren','Krafttraining','Schwimmen','Yoga','Wandern','Sonstiges'];
 
+/* ---------------- Trainingsplan & Ernährungsplan (Manuel Müller Coaching) ---------------- */
+const TRAINING_DAYS = [
+  {key:'mo', day:'Montag', title:'Push A', totalSets:15, exercises:[
+    {name:'Seitheben Kurzhantel', scheme:'3x 6-10', note:'letzter Satz Dropsatz'},
+    {name:'Brustpresse schräg', scheme:'3x 6-10'},
+    {name:'Butterfly', scheme:'2x 6-10'},
+    {name:'Trizeps Pushdowns', scheme:'3x 6-10'},
+    {name:'Dips Zusatzgewicht', scheme:'2x 6-10'},
+    {name:'Crunches Bauch', scheme:'2x 6-10'},
+  ]},
+  {key:'di', day:'Dienstag', title:'Pull A', totalSets:15, exercises:[
+    {name:'Latzug breit', scheme:'2x 6-10'},
+    {name:'Brustgestütztes Rudern breit', scheme:'3x 6-10'},
+    {name:'Enges Rudern am Turm', scheme:'2x 6-10'},
+    {name:'Reverse Butterfly', scheme:'2x 6-10'},
+    {name:'Hammer Curls', scheme:'3x 6-10'},
+    {name:'Preacher Curls', scheme:'3x 6-10'},
+  ]},
+  {key:'fr', day:'Freitag', title:'Torso', totalSets:17, exercises:[
+    {name:'Schulterdrücken Maschine', scheme:'2x 6-10'},
+    {name:'Brustpresse flach', scheme:'2x 6-10'},
+    {name:'Butterfly', scheme:'2x 6-10'},
+    {name:'Seitheben Kabel Hüfthöhe', scheme:'3x 6-10'},
+    {name:'Enges Rudern am Turm', scheme:'2x 6-10'},
+    {name:'Klimmzüge Zusatzgewicht', scheme:'3x 6-10'},
+    {name:'Brustgestütztes Rudern breit', scheme:'3x 6-10'},
+  ]},
+  {key:'sa', day:'Samstag', title:'Limbs', totalSets:18, exercises:[
+    {name:'Trizeps Pushdowns', scheme:'4x 6-10'},
+    {name:'Hammer Curls Kabelzug', scheme:'2x 6-10'},
+    {name:'Preacher Curls unilateral', scheme:'2x 6-10'},
+    {name:'Beinbeuger sitzend', scheme:'3x 6-10'},
+    {name:'Beinpresse', scheme:'2x 6-10'},
+    {name:'Beinstrecker', scheme:'3x 6-10'},
+    {name:'Crunches Bauch', scheme:'2x 6-10'},
+  ]},
+];
+
+const MEALS = [
+  {key:'meal1', title:'Meal 1', items:['200g Skyr oder 30g Whey','4 Scheiben Toast oder 65g Haferflocken','1 Apfel oder 150g Beeren','2 Eier'], kcal:609, protein:43, carbs:79, fat:14},
+  {key:'meal2', title:'Meal 2', items:['100g Reis (roh) oder Nudeln','200g Hähnchen oder mageres Rind','150g fettfreies Gemüse','10g Olivenöl'], kcal:696, protein:56, carbs:84, fat:14},
+  {key:'meal3', title:'Meal 3 · Pre-Workout', items:['40g Whey Pulver','70g Ricepudding oder Reiswaffel','1 Banane','1g Salz'], kcal:525, protein:36, carbs:90, fat:3},
+  {key:'meal4', title:'Meal 4', items:['100g Reis (roh) oder Nudeln','200g Hähnchen oder mageres Rind','150g fettfreies Gemüse','10g Olivenöl'], kcal:696, protein:56, carbs:84, fat:14},
+];
+const POST_WORKOUT = {key:'postworkout', title:'Nur an Trainingstagen — nach dem Gym', items:['40g Isoclear mit Wasser'], kcal:152, protein:0, carbs:38, fat:0};
+
+const SUPPLEMENTS = [
+  {key:'supp_bf', title:'Zum Frühstück', items:['Omega 3: 2 Kapseln','Magnesium: 3 Kapseln (200mg)','Vitamin D3/K2: 5000 i.U.']},
+  {key:'supp_bed', title:'1h vor dem Schlafen', items:['1mg Melatonin','4 Kapseln Knockout','2 Kapseln Omega 3']},
+  {key:'supp_daily', title:'Täglich', items:['10g Creatin']},
+  {key:'supp_intra', title:'Intra Workout (Handball / auch im Gym)', items:['0,5g Salz','10-20g Iso-Clear (optional)','20g Performance Elektrolyte']},
+];
+
+// Geschätzte Tageswerte auf Basis der Hauptvarianten (Meal 1-4), berechnet aus Standard-Nährwerten
+// pro 100g der genannten Lebensmittel — reale Werte hängen von den konkreten Produkten ab.
+const MACRO_TOTALS = {
+  rest: {kcal:2530, protein:191, carbs:338, fat:45},
+  training: {kcal:2680, protein:191, carbs:376, fat:45},
+};
+
 let state = null;
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
@@ -256,6 +348,7 @@ function freshState(){
     activities:[],
     draftMeasurement:{date:todayISO(), weight:'', waist:'', chest:'', hip:'', biceps:'', thigh:'', bodyFat:''},
     draftActivity:{date:todayISO(), type:ACTIVITY_TYPES[0], duration:'', calories:'', note:''},
+    checklist:{date:todayISO(), training:{}, meals:{}, supplements:{}},
   };
 }
 
@@ -265,9 +358,14 @@ function saveState(){
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){ state = {...freshState(), ...JSON.parse(raw)}; return; }
+    if(raw){ state = {...freshState(), ...JSON.parse(raw)}; ensureChecklistFresh(); return; }
   }catch(e){ /* no saved data */ }
   state = freshState();
+}
+function ensureChecklistFresh(){
+  if(!state.checklist || state.checklist.date !== todayISO()){
+    state.checklist = {date:todayISO(), training:{}, meals:{}, supplements:{}};
+  }
 }
 
 /* ---------------- helpers ---------------- */
@@ -363,9 +461,23 @@ function removeActivity(id){
   saveState(); render();
 }
 
+function toggleTrainingCheck(dayKey, idx){
+  const k = dayKey+':'+idx;
+  state.checklist.training[k] = !state.checklist.training[k];
+  saveState(); render();
+}
+function toggleMealCheck(mealKey){
+  state.checklist.meals[mealKey] = !state.checklist.meals[mealKey];
+  saveState(); render();
+}
+function toggleSuppCheck(key){
+  state.checklist.supplements[key] = !state.checklist.supplements[key];
+  saveState(); render();
+}
+
 /* ---------------- render: tabs ---------------- */
 function renderTabBar(){
-  const tabs = [['profil','Profil & Maße'], ['aktivitaeten','Aktivitäten'], ['statistik','Statistik']];
+  const tabs = [['profil','Profil & Maße'], ['aktivitaeten','Aktivitäten'], ['plan','Plan'], ['statistik','Statistik']];
   return `<div class="tabs">${tabs.map(([key,label])=>`
     <div class="tab ${state.activeTab===key?'active':''}" onclick="setTab('${key}')">
       <div class="tname">${label}</div>
@@ -551,6 +663,97 @@ function renderAktivitaeten(){
   `;
 }
 
+/* ---------------- render: plan ---------------- */
+function checkItemHTML(text, sub, checked, onclickExpr){
+  return `<div class="check-item" onclick="${onclickExpr}">
+    <div class="checkbox ${checked?'on':''}"></div>
+    <div>
+      <div class="check-text ${checked?'done':''}">${escapeHtml(text)}</div>
+      ${sub?`<div class="check-sub">${escapeHtml(sub)}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function dayCardHTML(day){
+  const rows = day.exercises.map((ex,idx)=>{
+    const checked = !!state.checklist.training[day.key+':'+idx];
+    const sub = ex.scheme + (ex.note ? (' · '+ex.note) : '');
+    return checkItemHTML(ex.name, sub, checked, `toggleTrainingCheck('${day.key}',${idx})`);
+  }).join('');
+  const doneCount = day.exercises.filter((ex,idx)=>state.checklist.training[day.key+':'+idx]).length;
+  return `<div class="day-block">
+    <div class="day-title">
+      <span class="dname">${day.day} · ${day.title}</span>
+      <span class="dmeta">${doneCount}/${day.exercises.length} · ${day.totalSets} Sets</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+function mealRowHTML(meal){
+  const checked = !!state.checklist.meals[meal.key];
+  const sub = meal.items.join(' · ') + ` — ${meal.kcal} kcal · P ${meal.protein}g · C ${meal.carbs}g · F ${meal.fat}g`;
+  return checkItemHTML(meal.title, sub, checked, `toggleMealCheck('${meal.key}')`);
+}
+
+function suppGroupHTML(group){
+  const rows = group.items.map((item,idx)=>{
+    const key = group.key+':'+idx;
+    const checked = !!state.checklist.supplements[key];
+    return checkItemHTML(item, null, checked, `toggleSuppCheck('${key}')`);
+  }).join('');
+  return `<div class="day-block">
+    <div class="day-title"><span class="dname">${group.title}</span></div>
+    ${rows}
+  </div>`;
+}
+
+function macroBlockHTML(totals, label){
+  const pKcal = totals.protein*4, cKcal = totals.carbs*4, fKcal = totals.fat*9;
+  const sum = pKcal+cKcal+fKcal;
+  const pPct = pKcal/sum*100, cPct = cKcal/sum*100, fPct = fKcal/sum*100;
+  return `
+    <div class="macro-block">
+      <div class="macro-head"><span>${label}</span><span class="kcal">${totals.kcal} kcal</span></div>
+      <div class="macro-bar-track">
+        <div style="display:flex; height:100%;">
+          <div style="width:${pPct.toFixed(1)}%; background:var(--cyan);"></div>
+          <div style="width:${cPct.toFixed(1)}%; background:var(--amber);"></div>
+          <div style="width:${fPct.toFixed(1)}%; background:var(--magenta);"></div>
+        </div>
+      </div>
+      <div class="macro-legend">
+        <span><i style="background:var(--cyan)"></i>Protein ${totals.protein}g · ${pPct.toFixed(0)}%</span>
+        <span><i style="background:var(--amber)"></i>Carbs ${totals.carbs}g · ${cPct.toFixed(0)}%</span>
+        <span><i style="background:var(--magenta)"></i>Fett ${totals.fat}g · ${fPct.toFixed(0)}%</span>
+      </div>
+    </div>`;
+}
+
+function renderPlan(){
+  return `
+    <div class="card">
+      <h2>Kalorien &amp; Makros</h2>
+      <p class="lead">Geschätzte Tageswerte auf Basis der Hauptvarianten aus deinem Ernährungsplan (Skyr/Toast/Apfel/Eier · Reis+Hähnchen+Gemüse+Öl · Whey+Ricepudding+Banane). Exakte Werte hängen von den konkreten Produkten ab, v. a. Whey- und Isoclear-Marke.</p>
+      ${macroBlockHTML(MACRO_TOTALS.rest, 'Ruhetag (Meal 1–4)')}
+      ${macroBlockHTML(MACRO_TOTALS.training, 'Trainingstag (+ Isoclear)')}
+    </div>
+    <div class="card">
+      <h2>Trainingsplan</h2>
+      ${TRAINING_DAYS.map(dayCardHTML).join('')}
+    </div>
+    <div class="card">
+      <h2>Ernährungsplan — heute</h2>
+      ${MEALS.map(mealRowHTML).join('')}
+      ${mealRowHTML(POST_WORKOUT)}
+    </div>
+    <div class="card">
+      <h2>Supplements</h2>
+      ${SUPPLEMENTS.map(suppGroupHTML).join('')}
+    </div>
+  `;
+}
+
 /* ---------------- render: statistik ---------------- */
 function weightChartSVG(){
   const pts = sortedMeasurements().filter(m=>m.weight!=null);
@@ -667,6 +870,7 @@ function render(){
   let body = '';
   if(state.activeTab==='profil') body = renderProfil();
   else if(state.activeTab==='aktivitaeten') body = renderAktivitaeten();
+  else if(state.activeTab==='plan') body = renderPlan();
   else body = renderStatistik();
   app.innerHTML = renderTabBar() + body;
 }
