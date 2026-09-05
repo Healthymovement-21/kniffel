@@ -8,29 +8,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#02060C;
-    --bg-1:#050D16;
-    --panel:rgba(8,22,34,0.66);
-    --panel-solid:#071722;
-    --line:rgba(64,224,255,0.22);
-    --line-strong:rgba(64,224,255,0.5);
+    --bg-0:#0A1826;
+    --bg-1:#122438;
+    --panel:rgba(26,46,68,0.72);
+    --panel-solid:#1B3149;
+    --line:rgba(64,224,255,0.28);
+    --line-strong:rgba(64,224,255,0.55);
     --cyan:#3FE0FF;
-    --cyan-soft:#8FF1FF;
-    --cyan-dim:#1B7A8C;
+    --cyan-soft:#9FF1FF;
+    --cyan-dim:#2B8FA3;
     --amber:#FFB13C;
     --danger:#FF4666;
     --good:#3FFFB0;
     --magenta:#FF6FD8;
-    --text:#D8F3FF;
-    --text-dim:#5C859C;
+    --text:#EAF5FC;
+    --text-dim:#93B2C9;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(63,224,255,0.14) 0%, transparent 60%),
-      repeating-linear-gradient(0deg, rgba(63,224,255,0.05) 0px, rgba(63,224,255,0.05) 1px, transparent 1px, transparent 34px),
-      repeating-linear-gradient(90deg, rgba(63,224,255,0.05) 0px, rgba(63,224,255,0.05) 1px, transparent 1px, transparent 34px),
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(63,224,255,0.16) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, rgba(63,224,255,0.06) 0px, rgba(63,224,255,0.06) 1px, transparent 1px, transparent 34px),
+      repeating-linear-gradient(90deg, rgba(63,224,255,0.06) 0px, rgba(63,224,255,0.06) 1px, transparent 1px, transparent 34px),
       linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
     min-height:100vh;
     font-family:'Rajdhani', sans-serif;
@@ -41,10 +41,10 @@
   }
   .scanline{
     position:fixed; left:0; right:0; height:2px; pointer-events:none; z-index:50;
-    background:linear-gradient(90deg, transparent, rgba(63,224,255,0.55), transparent);
-    box-shadow:0 0 12px rgba(63,224,255,0.6);
+    background:linear-gradient(90deg, transparent, rgba(63,224,255,0.4), transparent);
+    box-shadow:0 0 10px rgba(63,224,255,0.45);
     animation:scan 5s linear infinite;
-    opacity:0.6;
+    opacity:0.4;
   }
   @keyframes scan{
     0%{top:-2px;}
@@ -131,12 +131,13 @@
     font-family:'IBM Plex Mono'; font-size:10px; color:var(--text-dim); font-weight:600;
     text-transform:uppercase; letter-spacing:1px;
   }
-  .field input, .field select{
-    padding:10px 12px; border-radius:2px; border:1px solid rgba(63,224,255,0.25);
-    background:rgba(2,10,16,0.7); font-family:'Rajdhani'; font-weight:600; font-size:15px; color:var(--text);
+  .field input, .field select, .field textarea{
+    padding:10px 12px; border-radius:2px; border:1px solid rgba(63,224,255,0.3);
+    background:rgba(6,18,28,0.6); font-family:'Rajdhani'; font-weight:600; font-size:15px; color:var(--text);
   }
-  .field input::placeholder{color:rgba(216,243,255,0.28);}
-  .field input:focus, .field select:focus{
+  .field textarea{font-family:'Rajdhani'; font-weight:500; resize:vertical; line-height:1.4;}
+  .field input::placeholder, .field textarea::placeholder{color:rgba(147,178,201,0.55);}
+  .field input:focus, .field select:focus, .field textarea:focus{
     outline:none; border-color:var(--cyan); box-shadow:0 0 0 2px rgba(63,224,255,0.18);
   }
   .field select{color-scheme:dark;}
@@ -241,6 +242,20 @@
   .macro-legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-family:'IBM Plex Mono'; font-size:10.5px; color:var(--text-dim);}
   .macro-legend i{display:inline-block; width:8px; height:8px; margin-right:5px; vertical-align:middle;}
 
+  /* ---------- Check-In / Fotos ---------- */
+  .photo-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .photo-slot{background:rgba(6,18,28,0.45); border:1px solid rgba(63,224,255,0.2); padding:10px; display:flex; flex-direction:column; gap:8px;}
+  .photo-slot-label{font-family:'IBM Plex Mono'; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim);}
+  .photo-thumb{width:100%; height:150px; object-fit:cover; border:1px solid rgba(63,224,255,0.25); display:block;}
+  .photo-meta{display:flex; justify-content:space-between; align-items:center; font-family:'IBM Plex Mono'; font-size:10.5px; color:var(--text-dim);}
+  .photo-upload{
+    height:150px; border:1.5px dashed rgba(63,224,255,0.35); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--cyan-soft); text-transform:uppercase; letter-spacing:1px;
+    text-align:center; padding:8px;
+  }
+  .photo-upload:hover{border-color:var(--cyan); background:rgba(63,224,255,0.06);}
+  .guideline-list{margin:0 0 14px; padding-left:18px; font-size:13px; color:var(--text-dim); line-height:1.7;}
+
   @media (max-width:400px){
     h1{font-size:28px; letter-spacing:4px;}
     .field-grid{grid-template-columns:1fr;}
@@ -336,6 +351,14 @@ const MACRO_TOTALS = {
   training: {kcal:2680, protein:191, carbs:376, fat:45},
 };
 
+const WEEKDAY_NAMES = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const PHOTO_SLOTS = [
+  {key:'front', label:'Vorderansicht'},
+  {key:'side', label:'Seitenansicht'},
+  {key:'back', label:'Rückansicht'},
+  {key:'biceps', label:'Doppelbizeps'},
+];
+
 let state = null;
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
@@ -349,6 +372,10 @@ function freshState(){
     draftMeasurement:{date:todayISO(), weight:'', waist:'', chest:'', hip:'', biceps:'', thigh:'', bodyFat:''},
     draftActivity:{date:todayISO(), type:ACTIVITY_TYPES[0], duration:'', calories:'', note:''},
     checklist:{date:todayISO(), training:{}, meals:{}, supplements:{}},
+    checkin:{
+      notes:{essen:'', training:'', wohlbefinden:'', fragen:''},
+      photos:{front:null, side:null, back:null, biceps:null},
+    },
   };
 }
 
@@ -475,9 +502,68 @@ function toggleSuppCheck(key){
   saveState(); render();
 }
 
+function handlePhotoInput(slotKey, inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const maxW = 480;
+      const scale = Math.min(1, maxW/img.width);
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+      state.checkin.photos[slotKey] = {dataUrl, date: todayISO()};
+      saveState(); render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removePhoto(slotKey){
+  state.checkin.photos[slotKey] = null;
+  saveState(); render();
+}
+
+function weekDatesMonToSun(){
+  const today = new Date();
+  const dow = today.getDay();
+  const diffToMonday = dow===0 ? -6 : 1-dow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate()+diffToMonday);
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  return days;
+}
+function weekdayNameForISO(iso){
+  return WEEKDAY_NAMES[new Date(iso+'T00:00:00').getDay()];
+}
+function trainingTitleForWeekday(name){
+  const day = TRAINING_DAYS.find(t=>t.day===name);
+  return day ? day.title : 'Rest';
+}
+
+async function copyCheckinText(){
+  const text = buildCheckinText();
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('Check-In Text kopiert! Jetzt in WhatsApp einfügen und die Fotos anhängen.');
+  }catch(e){
+    window.prompt('Kopieren nicht möglich — Text markieren und manuell kopieren:', text);
+  }
+}
+
 /* ---------------- render: tabs ---------------- */
 function renderTabBar(){
-  const tabs = [['profil','Profil & Maße'], ['aktivitaeten','Aktivitäten'], ['plan','Plan'], ['statistik','Statistik']];
+  const tabs = [['profil','Profil & Maße'], ['aktivitaeten','Aktivitäten'], ['plan','Plan'], ['checkin','Check-In'], ['statistik','Statistik']];
   return `<div class="tabs">${tabs.map(([key,label])=>`
     <div class="tab ${state.activeTab===key?'active':''}" onclick="setTab('${key}')">
       <div class="tname">${label}</div>
@@ -754,6 +840,143 @@ function renderPlan(){
   `;
 }
 
+/* ---------------- render: check-in ---------------- */
+function weekOverviewHTML(){
+  const dates = weekDatesMonToSun();
+  const rows = dates.map(iso=>{
+    const m = state.measurements.find(x=>x.date===iso);
+    const wname = weekdayNameForISO(iso);
+    return {iso, wname, weight: m ? m.weight : null, label: trainingTitleForWeekday(wname)};
+  });
+  const weighed = rows.filter(r=>r.weight!=null);
+  const avg = weighed.length ? (weighed.reduce((s,r)=>s+r.weight,0)/weighed.length) : null;
+
+  const rowsHTML = rows.map(r=>`
+    <div class="hist-row">
+      <div class="hist-main">
+        <span class="hist-date">${fmtDate(r.iso)} · ${r.wname}</span>
+        <span class="hist-detail">${r.label}</span>
+      </div>
+      <span class="hist-val">${r.weight!=null ? r.weight+' kg' : '–'}</span>
+    </div>`).join('');
+
+  return `
+    ${rowsHTML}
+    <div class="stat-row" style="margin-top:12px;">
+      <div class="stat-tile">
+        <div class="val">${avg!=null ? avg.toFixed(1)+' kg' : '–'}</div>
+        <div class="lbl">Ø Gewicht diese Woche</div>
+      </div>
+      <div class="stat-tile">
+        <div class="val">${weighed.length}/7</div>
+        <div class="lbl">Tage gewogen</div>
+      </div>
+    </div>
+  `;
+}
+
+function buildCheckinText(){
+  const dates = weekDatesMonToSun();
+  const rows = dates.map(iso=>{
+    const m = state.measurements.find(x=>x.date===iso);
+    const wname = weekdayNameForISO(iso);
+    const label = trainingTitleForWeekday(wname);
+    const shortDate = new Date(iso+'T00:00:00').toLocaleDateString('de-DE',{weekday:'short', day:'2-digit', month:'short'});
+    return m!=null && m.weight!=null ? `${shortDate} ${m.weight}kg – ${label}` : `${shortDate} – ${label}`;
+  });
+  const weighed = dates.map(iso=>state.measurements.find(x=>x.date===iso)).filter(m=>m && m.weight!=null);
+  const avg = weighed.length ? (weighed.reduce((s,m)=>s+m.weight,0)/weighed.length).toFixed(1) : '–';
+  const n = state.checkin.notes;
+  return [
+    'Update Diät',
+    '',
+    'Gewichtsverlauf:',
+    '',
+    ...rows,
+    '',
+    `Gewichtsdurchschnitt diese Woche: ${avg}kg`,
+    '',
+    'Essen:',
+    n.essen || '-',
+    '',
+    'Training:',
+    n.training || '-',
+    '',
+    'Wohlbefinden und Schlaf:',
+    n.wohlbefinden || '-',
+    '',
+    'Meine Fragen:',
+    n.fragen || 'Heute Keine',
+  ].join('\n');
+}
+
+function photoSlotHTML(slot){
+  const p = state.checkin.photos[slot.key];
+  if(p){
+    return `<div class="photo-slot">
+      <div class="photo-slot-label">${slot.label}</div>
+      <img class="photo-thumb" src="${p.dataUrl}" alt="${escapeHtml(slot.label)}">
+      <div class="photo-meta">
+        <span>${fmtDate(p.date)}</span>
+        <button class="del-btn" onclick="removePhoto('${slot.key}')">✕</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="photo-slot">
+    <div class="photo-slot-label">${slot.label}</div>
+    <label class="photo-upload">
+      <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoInput('${slot.key}', this)">
+      <span>+ Foto aufnehmen</span>
+    </label>
+  </div>`;
+}
+
+function renderCheckin(){
+  const n = state.checkin.notes;
+  return `
+    <div class="card">
+      <h2>Wochenübersicht</h2>
+      <p class="lead">Gewichts- und Trainingsverlauf dieser Woche (Montag–Sonntag), automatisch aus deinen Messungen und dem Trainingsplan.</p>
+      ${weekOverviewHTML()}
+    </div>
+    <div class="card">
+      <h2>Notizen für den Check-In</h2>
+      <div class="field-grid">
+        <div class="field full">
+          <label>Essen</label>
+          <textarea rows="3" placeholder="z. B. Essen nach Plan, keine Probleme..." oninput="state.checkin.notes.essen=this.value" onblur="saveState()">${escapeHtml(n.essen)}</textarea>
+        </div>
+        <div class="field full">
+          <label>Training</label>
+          <textarea rows="3" placeholder="z. B. Steigerung in jeder Übung..." oninput="state.checkin.notes.training=this.value" onblur="saveState()">${escapeHtml(n.training)}</textarea>
+        </div>
+        <div class="field full">
+          <label>Wohlbefinden &amp; Schlaf</label>
+          <textarea rows="3" placeholder="z. B. Alles top, keine Einschlafprobleme..." oninput="state.checkin.notes.wohlbefinden=this.value" onblur="saveState()">${escapeHtml(n.wohlbefinden)}</textarea>
+        </div>
+        <div class="field full">
+          <label>Meine Fragen</label>
+          <textarea rows="2" placeholder="z. B. Heute keine" oninput="state.checkin.notes.fragen=this.value" onblur="saveState()">${escapeHtml(n.fragen)}</textarea>
+        </div>
+      </div>
+      <button class="primary-btn" onclick="copyCheckinText()">Check-In Text kopieren</button>
+    </div>
+    <div class="card">
+      <h2>Fortschrittsfotos</h2>
+      <p class="lead">Morgens nüchtern direkt nach dem Aufstehen aufnehmen.</p>
+      <ul class="guideline-list">
+        <li>Natürliches, helles Licht — kein Gegenlicht, kein gelbliches Kunstlicht</li>
+        <li>Neutraler Hintergrund, möglichst immer derselbe Ort</li>
+        <li>Handy stabil aufstellen (kein Selfie, kein Spiegelbild)</li>
+        <li>Scharf &amp; gut erkennbar, in HD-Qualität versenden</li>
+      </ul>
+      <div class="photo-grid">
+        ${PHOTO_SLOTS.map(photoSlotHTML).join('')}
+      </div>
+    </div>
+  `;
+}
+
 /* ---------------- render: statistik ---------------- */
 function weightChartSVG(){
   const pts = sortedMeasurements().filter(m=>m.weight!=null);
@@ -871,6 +1094,7 @@ function render(){
   if(state.activeTab==='profil') body = renderProfil();
   else if(state.activeTab==='aktivitaeten') body = renderAktivitaeten();
   else if(state.activeTab==='plan') body = renderPlan();
+  else if(state.activeTab==='checkin') body = renderCheckin();
   else body = renderStatistik();
   app.innerHTML = renderTabBar() + body;
 }
