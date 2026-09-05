@@ -3,653 +3,402 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Kniffel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Budget</title>
 <style>
   :root{
-    --felt:#1B4332;
-    --felt-dark:#122A20;
-    --felt-light:#25573F;
-    --paper:#F6F1E4;
-    --paper-stripe:#ECE4D0;
-    --ink:#2A2418;
-    --ink-soft:#5C5443;
-    --brass:#C9A24B;
-    --brass-dark:#A9803A;
-    --wine:#7A3238;
-    --muted:#9B9482;
-    --good:#3F6B4A;
+    --bg:#F2F2F7;
+    --card:#FFFFFF;
+    --line:#E5E5EA;
+    --blue:#007AFF;
+    --blue-dark:#0060DB;
+    --orange:#FF9500;
+    --pink:#FF375F;
+    --green:#34C759;
+    --red:#FF3B30;
+    --text:#1D1D1F;
+    --text-dim:#6E6E73;
+    --text-faint:#AEAEB2;
+    --fill:#F2F2F7;
+    --radius:18px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(ellipse at top, var(--felt-light) 0%, var(--felt) 45%, var(--felt-dark) 100%);
+    background:var(--bg);
     min-height:100vh;
-    font-family:'DM Sans', sans-serif;
-    color:var(--paper);
-    padding:20px 14px 60px;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color:var(--text);
+    padding:24px 16px 60px;
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:640px;margin:0 auto;}
 
+  /* ---------- Nav ---------- */
+  .site-nav{display:flex; gap:2px; padding:3px; margin:0 auto 20px; background:var(--fill); border-radius:11px; width:100%; max-width:280px;}
+  .site-nav a{
+    flex:1; text-align:center; color:var(--text-dim); font-size:13px; font-weight:590; text-decoration:none;
+    padding:7px 10px; border-radius:8px;
+  }
+  .site-nav a.active{background:var(--card); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.12);}
+
   /* ---------- Header ---------- */
-  header{text-align:center;margin-bottom:22px;position:relative;}
+  header{text-align:center; margin-bottom:24px;}
   .cup{
-    width:54px;height:54px;margin:0 auto 6px;
-    display:flex;align-items:center;justify-content:center;
+    width:64px; height:64px; margin:0 auto 12px; border-radius:16px;
+    background:linear-gradient(160deg, #34C759, #30B0C7);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px rgba(52,199,89,0.35);
   }
-  h1{
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:900;
-    font-style:italic;
-    font-size:44px;
-    letter-spacing:0.5px;
-    margin:0;
-    color:var(--brass);
-    text-shadow:0 2px 0 rgba(0,0,0,0.25);
-  }
-  .subtitle{
-    font-size:12.5px;
-    letter-spacing:2.5px;
-    text-transform:uppercase;
-    color:var(--paper);
-    opacity:0.55;
-    margin-top:2px;
-  }
-  .newgame-btn{
-    position:absolute; top:2px; right:0;
-    background:transparent;border:1px solid rgba(246,241,228,0.35);
-    color:var(--paper); opacity:0.8;
-    font-family:'DM Sans';font-size:12px;
-    padding:6px 10px;border-radius:20px;cursor:pointer;
-  }
-  .newgame-btn:hover{opacity:1;border-color:var(--brass);}
+  h1{font-size:30px; font-weight:700; letter-spacing:-0.02em; margin:0; color:var(--text);}
+  .subtitle{font-size:14px; color:var(--text-dim); margin-top:4px; font-weight:500;}
 
-  /* ---------- Setup screen ---------- */
-  .setup-card{
-    background:var(--paper); color:var(--ink);
-    border-radius:18px; padding:26px 22px 22px;
-    box-shadow:0 18px 40px rgba(0,0,0,0.35);
-  }
-  .setup-card p.lead{
-    font-size:14px; color:var(--ink-soft); margin:0 0 18px;
-    line-height:1.5;
-  }
-  .add-row{display:flex; gap:8px; margin-bottom:14px;}
-  .add-row input{
-    flex:1; padding:12px 14px; border-radius:10px;
-    border:1.5px solid #DCD3B8; background:#fff;
-    font-family:'DM Sans'; font-size:15px; color:var(--ink);
-  }
-  .add-row input:focus{outline:none; border-color:var(--brass-dark);}
-  .add-row button, .primary-btn{
-    background:var(--felt); color:var(--paper);
-    border:none; border-radius:10px; padding:12px 18px;
-    font-family:'DM Sans'; font-weight:700; font-size:14px;
-    cursor:pointer;
-  }
-  .add-row button:hover, .primary-btn:hover{background:var(--felt-dark);}
-  .primary-btn{width:100%; margin-top:8px; padding:14px; font-size:15px;
-    background:var(--brass-dark); color:#2A2418;}
-  .primary-btn:hover{background:var(--brass);}
-  .primary-btn:disabled{background:#DCD3B8; color:#A39C86; cursor:not-allowed;}
-  .player-chip-list{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;}
-  .player-chip{
-    display:flex; align-items:center; gap:8px;
-    background:#fff; border:1.5px solid #E3DAC0; border-radius:20px;
-    padding:7px 8px 7px 14px; font-size:14px; font-weight:500;
-  }
-  .player-chip button{
-    background:var(--wine); color:#fff; border:none; border-radius:50%;
-    width:20px; height:20px; font-size:12px; line-height:1; cursor:pointer;
-  }
-  .empty-hint{font-size:13px; color:var(--muted); font-style:italic; margin:4px 0 14px;}
+  /* ---------- Section tabs ---------- */
+  .tabs{display:flex; gap:2px; overflow-x:auto; margin-bottom:18px; background:var(--fill); border-radius:11px; padding:3px;}
+  .tab{flex:1 0 auto; background:transparent; border-radius:8px; padding:8px 12px; text-align:center; cursor:pointer;}
+  .tab.active{background:var(--card); box-shadow:0 1px 3px rgba(0,0,0,0.12);}
+  .tab .tname{font-weight:590; font-size:13px; color:var(--text-dim); white-space:nowrap;}
+  .tab.active .tname{color:var(--text);}
 
-  /* ---------- Player tabs ---------- */
-  .tabs{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px;}
-  .tab{
-    flex:0 0 auto; background:rgba(0,0,0,0.18); border:1.5px solid transparent;
-    border-radius:12px; padding:8px 14px; text-align:left; min-width:96px;
-  }
-  .tab.active{background:rgba(201,162,75,0.18); border-color:var(--brass);}
-  .tab .tname{font-weight:700; font-size:13.5px; color:var(--paper);}
-  .tab .tscore{font-family:'IBM Plex Mono'; font-size:16px; color:var(--brass); margin-top:2px;}
-  .tab.active .tname::before{content:'▸ ';}
-
-  /* ---------- Dice tray ---------- */
-  .tray{
-    background:var(--felt-dark);
-    border-radius:16px;
-    padding:20px 16px 16px;
-    box-shadow:inset 0 3px 14px rgba(0,0,0,0.45), inset 0 -1px 0 rgba(255,255,255,0.03);
-    margin-bottom:18px;
-  }
-  .tray-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
-  .rolls-left{font-family:'IBM Plex Mono'; font-size:12px; color:var(--paper); opacity:0.6;}
-  .dice-row{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
-  .die-slot{display:flex; flex-direction:column; align-items:center; gap:7px;}
-  .die{
-    width:58px; height:58px; border-radius:13px;
-    background:linear-gradient(160deg,#FDFAF1,#EFE8D5);
-    box-shadow:0 5px 0 rgba(0,0,0,0.3), 0 3px 6px rgba(0,0,0,0.35);
-    display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
-    padding:9px; cursor:pointer; position:relative;
-    border:2px solid transparent;
-    transition:transform 0.12s ease;
-  }
-  .die:active{transform:scale(0.94);}
-  .die.held{border-color:var(--brass); box-shadow:0 0 0 3px rgba(201,162,75,0.35), 0 5px 0 rgba(0,0,0,0.3);}
-  .die.empty{background:linear-gradient(160deg,#3a4a42,#2c3a33); box-shadow:inset 0 2px 6px rgba(0,0,0,0.4);}
-  .die.rolling{animation:tumble 0.45s ease-in-out;}
-  @keyframes tumble{
-    0%{transform:rotate(0deg) scale(1);}
-    30%{transform:rotate(120deg) scale(1.08);}
-    60%{transform:rotate(250deg) scale(0.95);}
-    100%{transform:rotate(360deg) scale(1);}
-  }
-  .pip{width:9px;height:9px;border-radius:50%;background:var(--ink);align-self:center;justify-self:center;visibility:hidden;}
-  .hold-btn{
-    font-family:'DM Sans'; font-size:10.5px; letter-spacing:0.5px;
-    background:none; border:1px solid rgba(246,241,228,0.3); color:var(--paper);
-    opacity:0.55; border-radius:20px; padding:3px 9px; cursor:pointer;
-  }
-  .hold-btn.on{opacity:1; border-color:var(--brass); color:var(--brass); background:rgba(201,162,75,0.12);}
-  .roll-btn{
-    display:block; margin:0 auto; background:var(--brass-dark); color:#2A2418;
-    border:none; border-radius:30px; padding:13px 30px; font-family:'DM Sans';
-    font-weight:700; font-size:14.5px; cursor:pointer; letter-spacing:0.3px;
-  }
-  .roll-btn:hover{background:var(--brass);}
-  .roll-btn:disabled{background:#4a5750; color:rgba(246,241,228,0.4); cursor:not-allowed;}
-  .hint{text-align:center; font-size:12.5px; color:var(--paper); opacity:0.5; margin-top:10px;}
-
-  .bonus-badge{
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--wine); color:var(--paper); border-radius:12px;
-    padding:11px 16px; margin-bottom:16px; font-size:13.5px;
-  }
-  .bonus-badge button{
-    background:var(--paper); color:var(--wine); border:none; border-radius:20px;
-    padding:7px 14px; font-weight:700; font-size:12.5px; cursor:pointer;
-  }
-
-  /* ---------- Scorecard ---------- */
+  /* ---------- Cards / forms ---------- */
   .card{
-    background:var(--paper); border-radius:16px; padding:6px 4px 14px;
-    box-shadow:0 18px 40px rgba(0,0,0,0.35);
-    transform:rotate(-0.2deg);
+    background:var(--card); color:var(--text); border-radius:var(--radius);
+    padding:20px; margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
   }
-  .scroll-x{overflow-x:auto;}
-  table{border-collapse:collapse; width:100%; min-width:100%;}
-  thead th{
-    font-family:'Fraunces'; font-weight:600; font-size:14px; color:var(--ink);
-    text-align:right; padding:14px 12px 8px; white-space:nowrap;
+  .card h2{font-size:18px; font-weight:700; letter-spacing:-0.01em; color:var(--text); margin:0 0 14px;}
+  .card p.lead{font-size:14px; color:var(--text-dim); margin:0 0 14px; line-height:1.5;}
+  .field-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12.5px; color:var(--text-dim); font-weight:600;}
+  .field input, .field select{
+    padding:11px 12px; border-radius:10px; border:none;
+    background:var(--fill); font-family:inherit; font-weight:500; font-size:15px; color:var(--text);
   }
-  thead th:first-child{text-align:left;}
-  thead th.current{color:var(--brass-dark);}
-  .section-row td{
-    font-family:'IBM Plex Mono'; font-size:10.5px; letter-spacing:2px;
-    color:var(--muted); text-transform:uppercase;
-    padding:12px 12px 4px; border-top:1px solid #E3DAC0;
+  .field input::placeholder{color:var(--text-faint);}
+  .field input:focus, .field select:focus{outline:none; box-shadow:0 0 0 3px rgba(0,122,255,0.25);}
+  .primary-btn{
+    width:100%; margin-top:4px; padding:13px; border:none; border-radius:980px;
+    background:var(--blue); color:#fff; font-family:inherit; font-weight:600; font-size:15px; cursor:pointer;
+    transition:background 0.15s ease;
   }
-  tbody td{padding:8px 12px; font-size:14px; color:var(--ink); white-space:nowrap;}
-  tbody tr.datarow:nth-child(odd) td{background:var(--paper-stripe);}
-  .cat-label{display:flex; align-items:baseline; gap:4px; min-width:130px;}
-  .cat-label .fill{flex:1; border-bottom:1.5px dotted #C9BFA0; margin-bottom:3px;}
-  .cat-label .sub{font-size:10.5px; color:var(--muted); font-weight:400;}
-  .score-cell{text-align:right; font-family:'IBM Plex Mono'; font-size:14.5px;}
-  .score-cell.filled{font-weight:600;}
-  .score-cell.zero{color:var(--muted);}
-  .score-cell.dash{color:#D3CAB0;}
-  .pick-wrap{display:flex; gap:5px; justify-content:flex-end; align-items:center;}
-  .pick-btn{
-    font-family:'IBM Plex Mono'; font-size:14px; font-weight:700;
-    background:rgba(63,107,74,0.14); color:var(--good); border:1.5px solid rgba(63,107,74,0.4);
-    border-radius:8px; padding:4px 9px; cursor:pointer;
-  }
-  .pick-btn:hover{background:rgba(63,107,74,0.28);}
-  .strike-btn{
-    background:none; border:1.5px solid #D3CAB0; color:var(--muted);
-    border-radius:8px; width:24px; height:24px; font-size:12px; cursor:pointer; line-height:1;
-  }
-  .strike-btn:hover{border-color:var(--wine); color:var(--wine);}
-  tr.total-row td{
-    border-top:2px solid var(--ink); font-weight:700; padding-top:10px;
-    font-family:'IBM Plex Mono'; font-size:16px;
-  }
-  tr.total-row td:first-child{font-family:'Fraunces'; font-weight:700; font-size:14px;}
+  .primary-btn:hover{background:var(--blue-dark);}
+  .primary-btn:disabled{background:var(--text-faint); cursor:not-allowed;}
 
-  /* ---------- End screen ---------- */
-  .end-card{
-    background:var(--paper); color:var(--ink); border-radius:18px;
-    padding:28px 22px; text-align:center; box-shadow:0 18px 40px rgba(0,0,0,0.35);
-    margin-bottom:18px;
-  }
-  .end-card h2{font-family:'Fraunces'; font-style:italic; font-size:26px; margin:0 0 4px;}
-  .end-card .winner{font-size:15px; color:var(--ink-soft); margin-bottom:18px;}
-  .rank-row{display:flex; justify-content:space-between; padding:9px 4px; font-size:14.5px;
-    border-bottom:1px dashed #E3DAC0;}
-  .rank-row:last-child{border-bottom:none;}
-  .rank-row .place{font-family:'IBM Plex Mono'; color:var(--brass-dark); font-weight:700; margin-right:8px;}
-  .rank-row .pts{font-family:'IBM Plex Mono'; font-weight:700;}
+  /* ---------- Stat tiles ---------- */
+  .stat-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
+  .stat-tile{flex:1 1 120px; background:var(--fill); border-radius:14px; padding:14px 15px;}
+  .stat-tile .val{font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.01em;}
+  .stat-tile .lbl{font-size:12px; color:var(--text-dim); font-weight:500; margin-top:3px;}
+  .stat-tile .delta{font-size:12.5px; font-weight:600; margin-top:4px;}
+  .delta.up{color:var(--green);}
+  .delta.down{color:var(--red);}
 
-  .confirm-box{
-    background:var(--wine); color:var(--paper); border-radius:12px; padding:12px 14px;
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    font-size:13px; margin-bottom:16px;
-  }
-  .confirm-box .btns{display:flex; gap:8px;}
-  .confirm-box button{border:none; border-radius:8px; padding:6px 12px; font-weight:700; cursor:pointer; font-size:12.5px;}
-  .confirm-yes{background:var(--paper); color:var(--wine);}
-  .confirm-no{background:rgba(255,255,255,0.15); color:var(--paper);}
+  /* ---------- History list ---------- */
+  .hist-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .hist-row:last-child{border-bottom:none;}
+  .hist-main{flex:1;}
+  .hist-date{font-size:12px; color:var(--text-dim); display:block; margin-bottom:2px; font-weight:500;}
+  .hist-detail{color:var(--text-dim); font-size:12.5px;}
+  .hist-val{font-weight:700; color:var(--text); white-space:nowrap;}
+  .del-btn{background:none; border:none; color:var(--text-faint); width:26px; height:26px; font-size:14px; cursor:pointer; line-height:1; flex-shrink:0; border-radius:50%;}
+  .del-btn:hover{color:var(--red); background:rgba(255,59,48,0.1);}
+  .empty-hint{font-size:13.5px; color:var(--text-dim); font-style:italic; padding:6px 0;}
+
+  /* ---------- Bars ---------- */
+  .chart-wrap{overflow-x:auto;}
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px;}
+  .bar-label{width:100px; flex-shrink:0; color:var(--text-dim); font-size:12.5px; font-weight:500;}
+  .bar-track{flex:1; background:var(--fill); border-radius:6px; height:10px; overflow:hidden;}
+  .bar-fill{background:var(--blue); height:100%; border-radius:6px;}
+  .bar-val{width:70px; text-align:right; font-size:12.5px; color:var(--text-dim); flex-shrink:0; font-weight:500;}
 
   @media (max-width:400px){
-    h1{font-size:36px;}
-    .die{width:50px; height:50px;}
+    h1{font-size:26px;}
+    .field-grid{grid-template-columns:1fr;}
   }
-
-  /* ---------- Nav ---------- */
-  .site-nav{display:flex; gap:8px; justify-content:center; margin-bottom:16px;}
-  .site-nav a{
-    color:var(--paper); opacity:0.55; font-size:12.5px; text-decoration:none;
-    padding:6px 14px; border-radius:20px; border:1px solid rgba(246,241,228,0.25);
-  }
-  .site-nav a.active{opacity:1; border-color:var(--brass); color:var(--brass);}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="site-nav">
-    <a href="index.html" class="active">🎲 Kniffel</a>
+    <a href="index.html" class="active">💰 Budget</a>
     <a href="fitness.html">💪 Fitness</a>
   </div>
   <header>
-    <button class="newgame-btn" id="newGameTopBtn" style="display:none;">Neues Spiel</button>
     <div class="cup">
-      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-        <path d="M10 14h28l-4 26a4 4 0 0 1-4 3.4H18a4 4 0 0 1-4-3.4L10 14z" fill="#0F2E22" stroke="#C9A24B" stroke-width="1.6"/>
-        <rect x="16" y="4" width="8" height="8" rx="1.5" fill="#F6F1E4" stroke="#C9A24B" stroke-width="1.4" transform="rotate(-12 20 8)"/>
-        <rect x="24" y="2" width="7" height="7" rx="1.3" fill="#F6F1E4" stroke="#C9A24B" stroke-width="1.3" transform="rotate(10 27 5)"/>
-        <circle cx="19.3" cy="7.2" r="0.9" fill="#2A2418"/>
-        <circle cx="26.6" cy="4.4" r="0.8" fill="#2A2418"/>
+      <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
+        <rect x="7" y="26" width="7" height="15" rx="2" fill="#fff"/>
+        <rect x="20.5" y="18" width="7" height="23" rx="2" fill="#fff"/>
+        <rect x="34" y="8" width="7" height="33" rx="2" fill="#fff"/>
       </svg>
     </div>
-    <h1>Kniffel</h1>
-    <div class="subtitle">Der Würfelblock</div>
+    <h1>Budget</h1>
+    <div class="subtitle">Monatlicher Ausgaben-Kalkulator</div>
   </header>
 
   <div id="app"></div>
 </div>
 
 <script>
-const CATS = [
-  {key:'einser', label:'Einser', section:'upper', value:1, sub:'Summe aller Einsen'},
-  {key:'zweier', label:'Zweier', section:'upper', value:2, sub:'Summe aller Zweien'},
-  {key:'dreier', label:'Dreier', section:'upper', value:3, sub:'Summe aller Dreien'},
-  {key:'vierer', label:'Vierer', section:'upper', value:4, sub:'Summe aller Vieren'},
-  {key:'fuenfer', label:'Fünfer', section:'upper', value:5, sub:'Summe aller Fünfen'},
-  {key:'sechser', label:'Sechser', section:'upper', value:6, sub:'Summe aller Sechsen'},
-  {key:'dreierpasch', label:'Dreierpasch', section:'lower', sub:'≥3 gleiche · Augensumme'},
-  {key:'viererpasch', label:'Viererpasch', section:'lower', sub:'≥4 gleiche · Augensumme'},
-  {key:'fullhouse', label:'Full House', section:'lower', sub:'3+2 gleiche · 25'},
-  {key:'kleinestrasse', label:'Kleine Straße', section:'lower', sub:'4 in Folge · 30'},
-  {key:'grossestrasse', label:'Große Straße', section:'lower', sub:'5 in Folge · 40'},
-  {key:'kniffel', label:'Kniffel', section:'lower', sub:'5 gleiche · 50'},
-  {key:'chance', label:'Chance', section:'lower', sub:'Augensumme'},
-];
+const STORAGE_KEY = 'budget-calculator-v1';
+const CATEGORIES = ['Wohnen','Lebensmittel','Transport','Versicherungen','Abos','Freizeit','Gesundheit','Sonstiges'];
+const MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 
 let state = null;
-const STORAGE_KEY = 'kniffel-game-v1';
 
-function emptyScores(){ const o={}; CATS.forEach(c=>o[c.key]=null); return o; }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function currentMonthKey(){ return todayISO().slice(0,7); }
+function monthKeyOf(dateISO){ return dateISO.slice(0,7); }
+function monthLabel(key){
+  const [y,m] = key.split('-').map(Number);
+  return MONTH_NAMES[m-1] + ' ' + y;
+}
+function monthShortLabel(key){
+  const [y,m] = key.split('-').map(Number);
+  return MONTH_NAMES[m-1].slice(0,3) + ' ' + String(y).slice(2);
+}
+function lastMonths(n){
+  const arr=[];
+  const now = new Date();
+  for(let i=n-1;i>=0;i--){
+    const dt = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    arr.push(dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'));
+  }
+  return arr;
+}
+function fmtEuro(n){
+  return n.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+function fmtDate(iso){
+  const d = new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+function escapeHtml(s){
+  return (s==null?'':String(s)).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
 function freshState(){
   return {
-    screen:'setup',
-    players:[],
-    setupDraft:'',
-    currentPlayerIdx:0,
-    dice:[null,null,null,null,null],
-    held:[false,false,false,false,false],
-    rollsLeft:3,
-    hasRolled:false,
-    bonusClaimedThisTurn:false,
-    confirmNewGame:false,
+    activeTab:'ausgaben',
+    monthlyIncome:null,
+    expenses:[],
+    draftExpense:{date:todayISO(), name:'', category:CATEGORIES[0], amount:''},
   };
 }
 
-async function saveState(){
-  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); }
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); }
 }
-async function loadState(){
+function loadState(){
   try{
-    const res = await window.storage.get(STORAGE_KEY);
-    if(res && res.value){ state = JSON.parse(res.value); return; }
-  }catch(e){ /* no saved game */ }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = {...freshState(), ...JSON.parse(raw)}; return; }
+  }catch(e){ /* no saved data */ }
   state = freshState();
 }
 
-/* ---------------- scoring ---------------- */
-function counts(dice){
-  const c=[0,0,0,0,0,0,0];
-  dice.forEach(d=>{ if(d) c[d]++; });
-  return c;
+/* ---------------- helpers ---------------- */
+function expensesForMonth(key){
+  return state.expenses.filter(e=>monthKeyOf(e.date)===key);
 }
-function calcCategory(key, dice){
-  if(dice.includes(null)) return null;
-  const c = counts(dice);
-  const sum = dice.reduce((a,b)=>a+b,0);
-  const set = new Set(dice);
-  switch(key){
-    case 'einser': return c[1]*1;
-    case 'zweier': return c[2]*2;
-    case 'dreier': return c[3]*3;
-    case 'vierer': return c[4]*4;
-    case 'fuenfer': return c[5]*5;
-    case 'sechser': return c[6]*6;
-    case 'dreierpasch': return c.some(n=>n>=3) ? sum : 0;
-    case 'viererpasch': return c.some(n=>n>=4) ? sum : 0;
-    case 'fullhouse': return (c.includes(3) && c.includes(2)) ? 25 : 0;
-    case 'kleinestrasse': {
-      const opts=[[1,2,3,4],[2,3,4,5],[3,4,5,6]];
-      return opts.some(o=>o.every(n=>set.has(n))) ? 30 : 0;
-    }
-    case 'grossestrasse': {
-      const opts=[[1,2,3,4,5],[2,3,4,5,6]];
-      return opts.some(o=>o.every(n=>set.has(n))) ? 40 : 0;
-    }
-    case 'kniffel': return c.some(n=>n===5) ? 50 : 0;
-    case 'chance': return sum;
-  }
+function totalForMonth(key){
+  return expensesForMonth(key).reduce((s,e)=>s+e.amount, 0);
 }
-function isKniffelRoll(dice){
-  if(dice.includes(null)) return false;
-  return counts(dice).some(n=>n===5);
-}
-function totals(player){
-  const upperKeys=['einser','zweier','dreier','vierer','fuenfer','sechser'];
-  let upperSum=0;
-  upperKeys.forEach(k=>{ if(player.scores[k]!=null) upperSum+=player.scores[k]; });
-  const bonus = upperSum>=63 ? 35 : 0;
-  let lowerSum=0;
-  CATS.filter(c=>c.section==='lower').forEach(c=>{ if(player.scores[c.key]!=null) lowerSum+=player.scores[c.key]; });
-  const grand = upperSum + bonus + lowerSum + (player.kniffelBonus||0);
-  return {upperSum, bonus, lowerSum, grand};
-}
-function allFilled(player){
-  return CATS.every(c=>player.scores[c.key]!=null);
-}
-function gameIsOver(){
-  return state.players.length>0 && state.players.every(allFilled);
+function sortedExpensesForMonth(key){
+  return [...expensesForMonth(key)].sort((a,b)=> b.date.localeCompare(a.date));
 }
 
 /* ---------------- actions ---------------- */
-function addPlayerSetup(){
-  const name = (state.setupDraft||'').trim();
-  if(!name) return;
-  state.players.push({id:'p'+Date.now()+Math.random().toString(36).slice(2,6), name, scores:emptyScores(), kniffelBonus:0});
-  state.setupDraft='';
-  saveState(); render();
-}
-function removePlayerSetup(id){
-  state.players = state.players.filter(p=>p.id!==id);
-  saveState(); render();
-}
-function startGame(){
-  if(state.players.length===0) return;
-  state.screen='game';
-  saveState(); render();
-}
-function rollDice(){
-  if(state.rollsLeft<=0) return;
-  const els = document.querySelectorAll('.die:not(.held-lock)');
-  state.dice.forEach((d,i)=>{
-    if(!state.held[i]){
-      const el = document.getElementById('die-'+i);
-      if(el) el.classList.add('rolling');
-    }
-  });
-  setTimeout(()=>{
-    state.dice = state.dice.map((d,i)=> state.held[i] ? d : (1+Math.floor(Math.random()*6)));
-    state.rollsLeft -= 1;
-    state.hasRolled = true;
-    saveState(); render();
-  }, 420);
-}
-function cycleDie(i){
-  const cur = state.dice[i];
-  state.dice[i] = cur ? (cur % 6) + 1 : 1;
-  state.hasRolled = true;
-  saveState(); render();
-}
-function toggleHold(i){
-  if(state.dice[i]==null) return;
-  state.held[i] = !state.held[i];
-  saveState(); render();
-}
-function claimKniffelBonus(){
-  const p = state.players[state.currentPlayerIdx];
-  p.kniffelBonus = (p.kniffelBonus||0) + 50;
-  state.bonusClaimedThisTurn = true;
-  saveState(); render();
-}
-function selectCategory(key, forceZero){
-  const p = state.players[state.currentPlayerIdx];
-  if(p.scores[key]!=null) return;
-  const val = forceZero ? 0 : calcCategory(key, state.dice);
-  if(val==null) return;
-  p.scores[key] = val;
-  nextTurn();
-}
-function nextTurn(){
-  state.currentPlayerIdx = (state.currentPlayerIdx + 1) % state.players.length;
-  state.dice = [null,null,null,null,null];
-  state.held = [false,false,false,false,false];
-  state.rollsLeft = 3;
-  state.hasRolled = false;
-  state.bonusClaimedThisTurn = false;
-  if(gameIsOver()) state.screen='end';
-  saveState(); render();
-}
-function requestNewGame(){ state.confirmNewGame = true; render(); }
-function cancelNewGame(){ state.confirmNewGame = false; render(); }
-function confirmNewGame(){
-  state = freshState();
+function setTab(t){ state.activeTab=t; saveState(); render(); }
+
+function setIncome(v){
+  const n = parseFloat(v);
+  state.monthlyIncome = isFinite(n) && n>=0 ? n : null;
   saveState(); render();
 }
 
-/* ---------------- render ---------------- */
-function pipPositions(v){
-  const m={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
-  return new Set(m[v]||[]);
+function addExpense(){
+  const d = state.draftExpense;
+  const amount = parseFloat(d.amount);
+  const name = (d.name||'').trim();
+  if(!d.date || !name || !isFinite(amount) || amount<=0) return;
+  const entry = {
+    id:'e'+Date.now()+Math.random().toString(36).slice(2,6),
+    date:d.date, name, category:d.category, amount,
+  };
+  state.expenses.push(entry);
+  state.draftExpense = {date:todayISO(), name:'', category:d.category, amount:''};
+  saveState(); render();
 }
-function dieFaceHTML(v){
-  const shown = v ? pipPositions(v) : new Set();
-  let html='';
-  for(let i=1;i<=9;i++){
-    html += `<span class="pip" style="visibility:${shown.has(i)?'visible':'hidden'}"></span>`;
-  }
-  return html;
-}
-
-function renderTray(){
-  const canRoll = state.rollsLeft>0;
-  let dice = '';
-  for(let i=0;i<5;i++){
-    const v = state.dice[i];
-    dice += `
-      <div class="die-slot">
-        <div id="die-${i}" class="die ${v?'':'empty'} ${state.held[i]?'held':''}" onclick="cycleDie(${i})" title="Klicken um Augenzahl zu setzen">
-          ${dieFaceHTML(v)}
-        </div>
-        <button class="hold-btn ${state.held[i]?'on':''}" onclick="toggleHold(${i})" ${v?'':'disabled'}>Halten</button>
-      </div>`;
-  }
-  const bonusEligible = state.hasRolled && isKniffelRoll(state.dice) &&
-    state.players[state.currentPlayerIdx].scores.kniffel === 50 && !state.bonusClaimedThisTurn;
-
-  return `
-    <div class="tray">
-      <div class="tray-top">
-        <span class="rolls-left">WÜRFE ÜBRIG: ${Math.max(state.rollsLeft,0)}</span>
-        <span class="rolls-left">${state.players[state.currentPlayerIdx].name} ist dran</span>
-      </div>
-      <div class="dice-row">${dice}</div>
-      <button class="roll-btn" onclick="rollDice()" ${canRoll?'':'disabled'}>🎲 Würfeln</button>
-      <div class="hint">Tippe auf einen Würfel, um seine Augenzahl direkt einzutragen (z.B. bei echten Würfeln) — oder nutze „Würfeln“ für den digitalen Wurf. „Halten“ sperrt einen Würfel vorm nächsten Wurf.</div>
-    </div>
-    ${bonusEligible ? `
-    <div class="bonus-badge">
-      <span>Noch ein Kniffel! Zusatzpunkte beanspruchen?</span>
-      <button onclick="claimKniffelBonus()">+50 sichern</button>
-    </div>` : ''}
-  `;
+function removeExpense(id){
+  state.expenses = state.expenses.filter(e=>e.id!==id);
+  saveState(); render();
 }
 
-function renderTabs(){
-  return `<div class="tabs">${state.players.map((p,i)=>{
-    const t = totals(p);
-    return `<div class="tab ${i===state.currentPlayerIdx?'active':''}">
-      <div class="tname">${escapeHtml(p.name)}</div>
-      <div class="tscore">${t.grand}</div>
+/* ---------------- render: tabs ---------------- */
+function renderTabBar(){
+  const tabs = [['ausgaben','Ausgaben'], ['uebersicht','Übersicht']];
+  return `<div class="tabs">${tabs.map(([key,label])=>`
+    <div class="tab ${state.activeTab===key?'active':''}" onclick="setTab('${key}')">
+      <div class="tname">${label}</div>
+    </div>`).join('')}</div>`;
+}
+
+/* ---------------- render: ausgaben ---------------- */
+function renderAusgaben(){
+  const mKey = currentMonthKey();
+  const total = totalForMonth(mKey);
+  const list = sortedExpensesForMonth(mKey);
+  const d = state.draftExpense;
+
+  let overviewHTML = `<div class="stat-tile">
+    <div class="val">${fmtEuro(total)}</div>
+    <div class="lbl">Ausgaben · ${monthLabel(mKey)}</div>
+  </div>`;
+  if(state.monthlyIncome!=null){
+    const remaining = state.monthlyIncome - total;
+    overviewHTML += `<div class="stat-tile">
+      <div class="val">${fmtEuro(remaining)}</div>
+      <div class="lbl">Verbleibend</div>
+      <div class="delta ${remaining>=0?'up':'down'}">${remaining>=0?'im Budget':'überzogen'}</div>
     </div>`;
-  }).join('')}</div>`;
-}
-
-function scoreCellHTML(cat, player, isCurrent){
-  const val = player.scores[cat.key];
-  if(val!=null){
-    return `<td class="score-cell filled ${val===0?'zero':''}">${val}</td>`;
   }
-  if(isCurrent && state.hasRolled){
-    const live = calcCategory(cat.key, state.dice);
-    return `<td class="score-cell">
-      <div class="pick-wrap">
-        <button class="pick-btn" onclick="selectCategory('${cat.key}', false)">${live}</button>
-        <button class="strike-btn" title="Streichen (0 Punkte)" onclick="selectCategory('${cat.key}', true)">✕</button>
+  overviewHTML += `<div class="stat-tile">
+    <div class="val">${list.length}</div>
+    <div class="lbl">Posten</div>
+  </div>`;
+
+  const historyHTML = list.length ? list.map(e=>`
+    <div class="hist-row">
+      <div class="hist-main">
+        <span class="hist-date">${fmtDate(e.date)}</span>
+        <span class="hist-detail">${escapeHtml(e.name)} · ${escapeHtml(e.category)}</span>
       </div>
-    </td>`;
-  }
-  return `<td class="score-cell dash">–</td>`;
-}
-
-function renderScorecard(){
-  const players = state.players;
-  const upperCats = CATS.filter(c=>c.section==='upper');
-  const lowerCats = CATS.filter(c=>c.section==='lower');
-
-  const headerRow = `<tr><th></th>${players.map((p,i)=>`<th class="${i===state.currentPlayerIdx?'current':''}">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
-
-  function catRow(cat){
-    return `<tr class="datarow">
-      <td><div class="cat-label">${cat.label}<span class="fill"></span><span class="sub">${cat.sub}</span></div></td>
-      ${players.map((p,i)=>scoreCellHTML(cat, p, i===state.currentPlayerIdx)).join('')}
-    </tr>`;
-  }
-
-  const upperSumRow = `<tr class="datarow">
-    <td><div class="cat-label"><b>Summe oben</b></div></td>
-    ${players.map(p=>`<td class="score-cell">${totals(p).upperSum}</td>`).join('')}
-  </tr>`;
-  const bonusRow = `<tr class="datarow">
-    <td><div class="cat-label">Bonus <span class="sub">ab 63 Punkten: +35</span></div></td>
-    ${players.map(p=>{const t=totals(p); return `<td class="score-cell ${t.bonus?'':'zero'}">${t.bonus}</td>`}).join('')}
-  </tr>`;
-  const kniffelBonusRow = `<tr class="datarow">
-    <td><div class="cat-label">Kniffel-Bonus</div></td>
-    ${players.map(p=>`<td class="score-cell ${p.kniffelBonus?'':'zero'}">${p.kniffelBonus||0}</td>`).join('')}
-  </tr>`;
-  const totalRow = `<tr class="total-row">
-    <td>Gesamt</td>
-    ${players.map(p=>`<td class="score-cell">${totals(p).grand}</td>`).join('')}
-  </tr>`;
+      <span class="hist-val">${fmtEuro(e.amount)}</span>
+      <button class="del-btn" onclick="removeExpense('${e.id}')">✕</button>
+    </div>`).join('') : `<div class="empty-hint">Noch keine Ausgaben in diesem Monat erfasst.</div>`;
 
   return `
     <div class="card">
-      <div class="scroll-x">
-        <table>
-          <thead>${headerRow}</thead>
-          <tbody>
-            <tr class="section-row"><td>Oben</td>${players.map(()=>'<td></td>').join('')}</tr>
-            ${upperCats.map(catRow).join('')}
-            ${upperSumRow}
-            ${bonusRow}
-            <tr class="section-row"><td>Unten</td>${players.map(()=>'<td></td>').join('')}</tr>
-            ${lowerCats.map(catRow).join('')}
-            ${kniffelBonusRow}
-            ${totalRow}
-          </tbody>
-        </table>
+      <h2>Monatliches Budget</h2>
+      <div class="field-grid">
+        <div class="field full">
+          <label>Einnahmen / Budget (€)</label>
+          <input type="number" min="0" step="0.01" placeholder="z. B. 2200" value="${state.monthlyIncome ?? ''}" onchange="setIncome(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>${monthLabel(mKey)}</h2>
+      <div class="stat-row">${overviewHTML}</div>
+    </div>
+
+    <div class="card">
+      <h2>Neue Ausgabe</h2>
+      <div class="field-grid">
+        <div class="field">
+          <label>Datum</label>
+          <input type="date" value="${d.date}" oninput="state.draftExpense.date=this.value">
+        </div>
+        <div class="field">
+          <label>Betrag (€)</label>
+          <input type="number" min="0" step="0.01" placeholder="z. B. 49.90" value="${d.amount}" oninput="state.draftExpense.amount=this.value">
+        </div>
+        <div class="field full">
+          <label>Bezeichnung</label>
+          <input type="text" placeholder="z. B. Miete, Netflix, Supermarkt..." value="${escapeHtml(d.name)}" oninput="state.draftExpense.name=this.value">
+        </div>
+        <div class="field full">
+          <label>Kategorie</label>
+          <select onchange="state.draftExpense.category=this.value">
+            ${CATEGORIES.map(c=>`<option value="${c}" ${d.category===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <button class="primary-btn" onclick="addExpense()">Ausgabe speichern</button>
+    </div>
+
+    <div class="card">
+      <h2>Ausgaben diesen Monat</h2>
+      ${historyHTML}
+    </div>
+  `;
+}
+
+/* ---------------- render: übersicht ---------------- */
+function categoryBarsHTML(){
+  const mKey = currentMonthKey();
+  const list = expensesForMonth(mKey);
+  if(!list.length){
+    return `<div class="empty-hint">Keine Ausgaben in diesem Monat.</div>`;
+  }
+  const byCat = {};
+  list.forEach(e=>{ byCat[e.category] = (byCat[e.category]||0) + e.amount; });
+  const max = Math.max(...Object.values(byCat));
+  return Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
+    <div class="bar-row">
+      <div class="bar-label">${escapeHtml(cat)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(amt/max*100).toFixed(0)}%"></div></div>
+      <div class="bar-val">${fmtEuro(amt)}</div>
+    </div>
+  `).join('');
+}
+
+function monthTrendHTML(){
+  const months = lastMonths(6);
+  const totals = months.map(k=>({k, total:totalForMonth(k)}));
+  const max = Math.max(1, ...totals.map(t=>t.total));
+  return totals.map(t=>`
+    <div class="bar-row">
+      <div class="bar-label">${monthShortLabel(t.k)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(t.total/max*100).toFixed(0)}%"></div></div>
+      <div class="bar-val">${fmtEuro(t.total)}</div>
+    </div>
+  `).join('');
+}
+
+function renderUebersicht(){
+  const months = lastMonths(6);
+  const avg = months.reduce((s,k)=>s+totalForMonth(k), 0) / months.length;
+
+  return `
+    <div class="card">
+      <h2>Nach Kategorie · ${monthLabel(currentMonthKey())}</h2>
+      ${categoryBarsHTML()}
+    </div>
+    <div class="card">
+      <h2>Verlauf (6 Monate)</h2>
+      ${monthTrendHTML()}
+    </div>
+    <div class="card">
+      <div class="stat-row">
+        <div class="stat-tile">
+          <div class="val">${fmtEuro(avg)}</div>
+          <div class="lbl">Ø Ausgaben / Monat</div>
+        </div>
+        <div class="stat-tile">
+          <div class="val">${state.expenses.length}</div>
+          <div class="lbl">Ausgaben gesamt</div>
+        </div>
       </div>
     </div>
   `;
 }
 
-function renderSetup(){
-  return `
-    <div class="setup-card">
-      <p class="lead">Fügt eure Spieler:innen hinzu, dann geht's los. Ihr könnt bei jedem Zug entweder echte Würfel eintragen oder digital würfeln — der Block rechnet automatisch alle möglichen Punkte aus.</p>
-      <div class="add-row">
-        <input id="nameInput" type="text" placeholder="Name eingeben…" value="${escapeHtml(state.setupDraft)}"
-          onkeydown="if(event.key==='Enter'){ addPlayerSetup(); }"
-          oninput="state.setupDraft=this.value;">
-        <button onclick="addPlayerSetup()">Hinzufügen</button>
-      </div>
-      ${state.players.length ? `<div class="player-chip-list">
-        ${state.players.map(p=>`<div class="player-chip">${escapeHtml(p.name)}<button onclick="removePlayerSetup('${p.id}')">✕</button></div>`).join('')}
-      </div>` : `<div class="empty-hint">Noch keine Spieler:innen hinzugefügt.</div>`}
-      <button class="primary-btn" onclick="startGame()" ${state.players.length? '' : 'disabled'}>Spiel starten</button>
-    </div>
-  `;
-}
-
-function renderEnd(){
-  const ranked = [...state.players].sort((a,b)=>totals(b).grand - totals(a).grand);
-  return `
-    <div class="end-card">
-      <h2>Spiel beendet</h2>
-      <div class="winner">🏆 ${escapeHtml(ranked[0].name)} gewinnt mit ${totals(ranked[0]).grand} Punkten</div>
-      ${ranked.map((p,i)=>`<div class="rank-row"><span><span class="place">${i+1}.</span>${escapeHtml(p.name)}</span><span class="pts">${totals(p).grand}</span></div>`).join('')}
-    </div>
-    <button class="primary-btn" onclick="confirmNewGame()">Neues Spiel</button>
-  `;
-}
-
-function escapeHtml(s){
-  return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
+/* ---------------- render ---------------- */
 function render(){
   const app = document.getElementById('app');
-  const topBtn = document.getElementById('newGameTopBtn');
-  topBtn.style.display = state.screen==='setup' ? 'none' : 'block';
-  topBtn.onclick = requestNewGame;
-
-  let confirmHTML = '';
-  if(state.confirmNewGame){
-    confirmHTML = `<div class="confirm-box">
-      <span>Aktuelles Spiel wirklich beenden?</span>
-      <div class="btns">
-        <button class="confirm-yes" onclick="confirmNewGame()">Ja, neu starten</button>
-        <button class="confirm-no" onclick="cancelNewGame()">Abbrechen</button>
-      </div>
-    </div>`;
-  }
-
-  if(state.screen==='setup'){
-    app.innerHTML = confirmHTML + renderSetup();
-  } else if(state.screen==='game'){
-    app.innerHTML = confirmHTML + renderTabs() + renderTray() + renderScorecard();
-  } else if(state.screen==='end'){
-    app.innerHTML = confirmHTML + renderTabs() + renderEnd() + renderScorecard();
-  }
+  let body = '';
+  if(state.activeTab==='ausgaben') body = renderAusgaben();
+  else body = renderUebersicht();
+  app.innerHTML = renderTabBar() + body;
 }
 
-(async function init(){
-  await loadState();
+(function init(){
+  loadState();
   render();
 })();
 </script>
